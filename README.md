@@ -129,4 +129,9 @@ Step 10: The application will open in your browser and the CoreInventory system 
 This project was developed as a solution for the CoreInventory problem statement.
 The system digitizes inventory operations including stock receipts, deliveries,
 internal transfers, and stock adjustments while providing real-time tracking of stock movements.
-9. if want to run using the git hub then user needs to click the codespace and there  first it will ask to install the c# dev kit install it in terminal  write   dotnet run  it will show the local port then use that url  it will take user to login page  
+9. Running via GitHub Codespaces (Browser-based)
+Step 1: Click the green "<> Code" button on this repo and select the Codespaces tab.
+Step 2: Click "Create codespace on main".
+Step 3: Once the editor loads, install the C# Dev Kit extension if prompted.
+Step 4: Open the terminal and type: dotnet run --project HackathonMvcSqlite.csproj. or simply dotnet run
+Step 5: Click the "Open in Browser" pop-up to view the live application
