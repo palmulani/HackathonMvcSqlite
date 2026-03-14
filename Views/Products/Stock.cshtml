@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "Stock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var product = ViewBag.Product as HackathonMvcSqlite.Models.Product;
+    var balances = ViewBag.Balances as IEnumerable<dynamic> ?? new List<dynamic>();
+}
+<h2 class="mb-3">Stock: @product?.Name</h2>
+<p class="text-muted">@product?.Sku · @product?.UnitOfMeasure · Category: @(product?.Category?.Name ?? "-")</p>
+<table class="table table-sm">
+    <thead><tr><th>Warehouse</th><th>Quantity</th></tr></thead>
+    <tbody>
+        @foreach (var b in balances)
+        { <tr><td>@b.Name</td><td>@b.Quantity</td></tr> }
+        @if (!balances.Any()) { <tr><td colspan="2" class="text-muted">No stock on hand</td></tr> }
+    </tbody>
+</table>
+<a href="/Products" class="btn btn-secondary">Back to Products</a>

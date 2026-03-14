@@ -1,0 +1,13 @@
+@model IEnumerable<HackathonMvcSqlite.Models.Warehouse>
+@{
+    ViewData["Title"] = "Warehouses";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2 class="mb-3">Warehouses</h2>
+<p><a href="/Warehouses/Create" class="btn btn-success">Add Warehouse</a></p>
+<table class="table table-sm table-hover">
+    <thead><tr><th>Name</th><th>Code</th><th>Location</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var w in Model) { <tr><td>@w.Name</td><td>@w.Code</td><td>@w.Location</td><td><a href="/Warehouses/Edit/@w.Id">Edit</a></td></tr> }
+    </tbody>
+</table>

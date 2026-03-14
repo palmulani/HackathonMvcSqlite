@@ -1,0 +1,28 @@
+@model IEnumerable<HackathonMvcSqlite.Models.InternalTransfer>
+@{
+    ViewData["Title"] = "Internal Transfers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2 class="mb-3">Internal Transfers</h2>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto"><select name="status" class="form-select form-select-sm"><option value="">All</option><option value="0">Draft</option><option value="3">Done</option></select></div>
+    <div class="col-auto"><select name="warehouseId" class="form-select form-select-sm" asp-items="ViewBag.Warehouses"><option value="">All warehouses</option></select></div>
+    <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Filter</button></div>
+    <div class="col-auto"><a href="/InternalTransfers/Create" class="btn btn-sm btn-success">New Transfer</a></div>
+</form>
+<table class="table table-sm table-hover">
+    <thead><tr><th>Reference</th><th>From</th><th>To</th><th>Status</th><th>Created</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.Reference</td>
+                <td>@t.SourceWarehouse?.Name</td>
+                <td>@t.DestinationWarehouse?.Name</td>
+                <td><span class="badge bg-secondary">@t.Status</span></td>
+                <td>@t.CreatedAt.ToLocalTime().ToString("g")</td>
+                <td><a href="/InternalTransfers/Edit/@t.Id">Edit</a> @if (t.Status != HackathonMvcSqlite.Models.DocumentStatus.Done) { <text>|</text> <a href="/InternalTransfers/Validate/@t.Id">Validate</a> }</td>
+            </tr>
+        }
+    </tbody>
+</table>

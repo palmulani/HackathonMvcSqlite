@@ -1,0 +1,27 @@
+@model IEnumerable<HackathonMvcSqlite.Models.StockAdjustment>
+@{
+    ViewData["Title"] = "Adjustments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2 class="mb-3">Stock Adjustments</h2>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto"><select name="warehouseId" class="form-select form-select-sm" asp-items="ViewBag.Warehouses"><option value="">All warehouses</option></select></div>
+    <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Filter</button></div>
+    <div class="col-auto"><a href="/Adjustments/Create" class="btn btn-sm btn-success">New Adjustment</a></div>
+</form>
+<table class="table table-sm table-hover">
+    <thead><tr><th>Reference</th><th>Product</th><th>Warehouse</th><th>Previous</th><th>Counted</th><th>Date</th></tr></thead>
+    <tbody>
+        @foreach (var a in Model)
+        {
+            <tr>
+                <td>@a.Reference</td>
+                <td>@a.Product?.Name</td>
+                <td>@a.Warehouse?.Name</td>
+                <td>@a.PreviousQuantity</td>
+                <td>@a.CountedQuantity</td>
+                <td>@a.CreatedAt.ToLocalTime().ToString("g")</td>
+            </tr>
+        }
+    </tbody>
+</table>

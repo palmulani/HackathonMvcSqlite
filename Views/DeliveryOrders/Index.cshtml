@@ -1,0 +1,28 @@
+@model IEnumerable<HackathonMvcSqlite.Models.DeliveryOrder>
+@{
+    ViewData["Title"] = "Delivery Orders";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2 class="mb-3">Delivery Orders</h2>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto"><select name="status" class="form-select form-select-sm"><option value="">All</option><option value="0">Draft</option><option value="3">Done</option></select></div>
+    <div class="col-auto"><select name="warehouseId" class="form-select form-select-sm" asp-items="ViewBag.Warehouses"><option value="">All warehouses</option></select></div>
+    <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Filter</button></div>
+    <div class="col-auto"><a href="/DeliveryOrders/Create" class="btn btn-sm btn-success">New Delivery Order</a></div>
+</form>
+<table class="table table-sm table-hover">
+    <thead><tr><th>Reference</th><th>Customer</th><th>Warehouse</th><th>Status</th><th>Created</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.Reference</td>
+                <td>@d.Customer</td>
+                <td>@d.Warehouse?.Name</td>
+                <td><span class="badge bg-secondary">@d.Status</span></td>
+                <td>@d.CreatedAt.ToLocalTime().ToString("g")</td>
+                <td><a href="/DeliveryOrders/Edit/@d.Id">Edit</a> @if (d.Status != HackathonMvcSqlite.Models.DocumentStatus.Done) { <text>|</text> <a href="/DeliveryOrders/Validate/@d.Id">Validate</a> }</td>
+            </tr>
+        }
+    </tbody>
+</table>

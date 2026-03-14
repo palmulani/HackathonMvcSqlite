@@ -1,4 +1,4 @@
-@* @model HackathonMvcSqlite.ViewModels.DashboardViewModel
+@model HackathonMvcSqlite.ViewModels.DashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -28,9 +28,7 @@
         <select name="warehouseId" class="form-select form-select-sm">
             <option value="">All warehouses</option>
             @foreach (var w in ViewBag.Warehouses as IEnumerable<HackathonMvcSqlite.Models.Warehouse> ?? new List<HackathonMvcSqlite.Models.Warehouse>())
-            {
-                <option value="@w.Id" selected="@(ViewBag.WarehouseId == w.Id)">@w.Name</option>
-            }
+            { <option value="@w.Id" selected="@(ViewBag.WarehouseId == w.Id)">@w.Name</option> }
         </select>
     </div>
     <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Filter</button></div>
@@ -96,10 +94,7 @@
                                 <td>@p.ReorderLevel</td>
                             </tr>
                         }
-                        @if (!Model.LowStockProducts.Any())
-                        {
-                            <tr><td colspan="4" class="text-muted">No low stock items</td></tr>
-                        }
+                        @if (!Model.LowStockProducts.Any()) { <tr><td colspan="4" class="text-muted">No low stock items</td></tr> }
                     </tbody>
                 </table>
             </div>
@@ -122,30 +117,10 @@
                                 <td>@d.CreatedAt.ToLocalTime().ToString("g")</td>
                             </tr>
                         }
-                        @if (!Model.RecentDocuments.Any())
-                        {<Project Sdk="Microsoft.NET.Sdk.Web">
-
-	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.25" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.25">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
-
-</Project>
-                            <tr><td colspan="5" class="text-muted">No documents yet</td></tr>
-                        }
+                        @if (!Model.RecentDocuments.Any()) { <tr><td colspan="5" class="text-muted">No documents yet</td></tr> }
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
- *@

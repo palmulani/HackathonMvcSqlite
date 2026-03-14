@@ -1,0 +1,24 @@
+@model HackathonMvcSqlite.Models.InternalTransfer
+@{
+    ViewData["Title"] = "Edit Transfer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2 class="mb-3">Transfer @Model.Reference</h2>
+<p>@Model.SourceWarehouse?.Name → @Model.DestinationWarehouse?.Name · Status: <span class="badge bg-secondary">@Model.Status</span></p>
+<table class="table table-sm mb-3">
+    <thead><tr><th>Product</th><th>Quantity</th></tr></thead>
+    <tbody>
+        @foreach (var l in Model.Lines) { <tr><td>@l.Product?.Name</td><td>@l.Quantity</td></tr> }
+    </tbody>
+</table>
+@if (Model.Status != HackathonMvcSqlite.Models.DocumentStatus.Done)
+{
+    <form asp-action="AddLine" method="post" class="row g-2 align-items-end">
+        <input type="hidden" name="internalTransferId" value="@Model.Id" />
+        <div class="col-auto"><select name="productId" class="form-select form-select-sm" asp-items="ViewBag.Products" required></select></div>
+        <div class="col-auto"><input type="number" name="quantity" step="0.01" class="form-control form-control-sm" placeholder="Qty" required /></div>
+        <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Add line</button></div>
+    </form>
+    <p class="mt-2"><a href="/InternalTransfers/Validate/@Model.Id" class="btn btn-success">Validate (move stock)</a></p>
+}
+<a href="/InternalTransfers" class="btn btn-secondary mt-2">Back to list</a>
