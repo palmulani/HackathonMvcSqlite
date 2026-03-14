@@ -1,10 +1,9 @@
-using HackathonMvcSqlite.Data;
-using HackathonMvcSqlite.Models;
-using HackathonMvcSqlite.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Xml.Linq;
+using HackathonMvcSqlite.Data;
+using HackathonMvcSqlite.Models;
+using HackathonMvcSqlite.ViewModels;
 
 namespace HackathonMvcSqlite.Controllers
 {
@@ -14,7 +13,7 @@ namespace HackathonMvcSqlite.Controllers
         private readonly AppDbContext _db;
 
 
-        public DashboardController(AppDbContext db) => _db = db;
+    public DashboardController(AppDbContext db) => _db = db;
 
         public async Task<IActionResult> Index(
             DocumentType? documentType,
@@ -151,7 +150,7 @@ namespace HackathonMvcSqlite.Controllers
 
             return View(vm);
         }
-    }
+    }  
 
 
 }
