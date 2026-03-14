@@ -30,17 +30,9 @@ namespace HackathonMvcSqlite.Controllers
             if (warehouseId.HasValue)
                 query = query.Where(d => d.WarehouseId == warehouseId.Value);
 
-            var list = await query
-                .OrderByDescending(d => d.CreatedAt)
-                .ToListAsync(ct);
+            var list = await query.OrderByDescending(d => d.CreatedAt).ToListAsync(ct);
 
-            ViewBag.Warehouses = new SelectList(
-                await _db.Warehouses.OrderBy(w => w.Name).ToListAsync(ct),
-                "Id",
-                "Name",
-                warehouseId
-            );
-
+            ViewBag.Warehouses = new SelectList(await _db.Warehouses.OrderBy(w => w.Name).ToListAsync(ct), "Id", "Name", warehouseId);
             ViewBag.Status = status;
 
             return View(list);
@@ -48,17 +40,8 @@ namespace HackathonMvcSqlite.Controllers
 
         public async Task<IActionResult> Create(CancellationToken ct)
         {
-            ViewBag.Warehouses = new SelectList(
-                await _db.Warehouses.OrderBy(w => w.Name).ToListAsync(ct),
-                "Id",
-                "Name"
-            );
-
-            ViewBag.Products = new SelectList(
-                await _db.Products.OrderBy(p => p.Name).ToListAsync(ct),
-                "Id",
-                "Name"
-            );
+            ViewBag.Warehouses = new SelectList(await _db.Warehouses.OrderBy(w => w.Name).ToListAsync(ct), "Id", "Name");
+            ViewBag.Products = new SelectList(await _db.Products.OrderBy(p => p.Name).ToListAsync(ct), "Id", "Name");
 
             return View(new DeliveryOrder
             {
@@ -91,6 +74,18 @@ namespace HackathonMvcSqlite.Controllers
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
+        {
+            var category = await _db.ProductCategories.FindAsync(new object[] { id }, ct);
+
+            if (category != null)
+            {
+                _db.ProductCategories.Remove(category);
+                await _db.SaveChangesAsync(ct);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
         public async Task<IActionResult> Edit(int id, CancellationToken ct)
         {
             var d = await _db.DeliveryOrders
@@ -99,18 +94,14 @@ namespace HackathonMvcSqlite.Controllers
                 .Include(x => x.Warehouse)
                 .FirstOrDefaultAsync(x => x.Id == id, ct);
 
-            if (d == null)
-                return NotFound();
+            if (d == null) return NotFound();
 
-            ViewBag.Products = new SelectList(
-                await _db.Products.OrderBy(p => p.Name).ToListAsync(ct),
-                "Id",
-                "Name"
-            );
+            ViewBag.Products = new SelectList(await _db.Products.OrderBy(p => p.Name).ToListAsync(ct), "Id", "Name");
 
             return View(d);
         }
 
+        [HttpPost]
         public async Task<IActionResult> AddLine(int deliveryOrderId, int productId, decimal quantity, CancellationToken ct)
         {
             var d = await _db.DeliveryOrders.FindAsync(new object[] { deliveryOrderId }, ct);
@@ -132,26 +123,40 @@ namespace HackathonMvcSqlite.Controllers
 
         public async Task<IActionResult> Validate(int id, CancellationToken ct)
         {
-            var d = await _db.DeliveryOrders.FindAsync(new object[] { id }, ct);
+            var d = await _db.DeliveryOrders
+                .Include(x => x.Lines)
+                .ThenInclude(l => l.Product)
+                .FirstOrDefaultAsync(x => x.Id == id, ct);
 
-            if (d == null)
-                return NotFound();
+            if (d == null) return NotFound();
 
-            _inv.ValidateDeliveryOrder(id);
+            List<string> outOfStockProducts = new List<string>();
 
-            return RedirectToAction(nameof(Index));
-        }
-
-        // DELETE DELIVERY ORDER
-        public async Task<IActionResult> Delete(int id, CancellationToken ct)
-        {
-            var order = await _db.DeliveryOrders.FindAsync(new object[] { id }, ct);
-
-            if (order != null)
+            foreach (var line in d.Lines)
             {
-                _db.DeliveryOrders.Remove(order);
-                await _db.SaveChangesAsync(ct);
+                var stock = await _db.StockBalances
+                    .FirstOrDefaultAsync(s =>
+                        s.ProductId == line.ProductId &&
+                        s.WarehouseId == d.WarehouseId, ct);
+
+                if (stock == null || stock.Quantity < line.Quantity)
+                {
+                    outOfStockProducts.Add(line.Product?.Name ?? "Product");
+                }
             }
+
+            // 🚫 STOP VALIDATION IF STOCK IS LOW
+            if (outOfStockProducts.Count > 0)
+            {
+                TempData["Error"] =
+                    "Cannot validate. These products are OUT OF STOCK: " +
+                    string.Join(", ", outOfStockProducts);
+
+                return RedirectToAction(nameof(Edit), new { id });
+            }
+
+            // ✅ ONLY VALIDATE IF ALL PRODUCTS HAVE STOCK
+            _inv.ValidateDeliveryOrder(id);
 
             return RedirectToAction(nameof(Index));
         }

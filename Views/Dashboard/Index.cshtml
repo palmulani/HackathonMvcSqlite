@@ -1,4 +1,5 @@
 @model HackathonMvcSqlite.ViewModels.DashboardViewModel
+
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,155 +8,221 @@
 <style>
 
     .stats-card {
-        border: none;
-        border-radius: 12px;
-        min-height: 120px;
-        box-shadow: 0 5px 15px rgba(0,0,0,.08);
-        transition: .2s;
+        border-radius: 14px;
+        height: 130px;
+        padding: 20px;
+        color: white;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: 0 6px 18px rgba(0,0,0,.1);
+        transition: .25s;
     }
 
         .stats-card:hover {
             transform: translateY(-3px);
         }
 
-        .stats-card .card-body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-        }
+    .stats-title {
+        font-size: 16px;
+        font-weight: 600;
+    }
 
-        .stats-card h6 {
-            font-weight: 600;
-        }
+    .stats-value {
+        font-size: 32px;
+        font-weight: 700;
+        margin-top: 6px;
+    }
 
-        .stats-card .value {
-            font-size: 28px;
-            font-weight: 700;
-        }
+    /* ICON POSITION */
 
-    /* CARD COLORS */
+    .stats-icon {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        font-size: 30px;
+        opacity: .25;
+    }
 
-    .card-total {
+    /* COLORS */
+
+    .card-blue {
         background: linear-gradient(135deg,#2563eb,#1e40af);
-        color: white;
     }
 
-    .card-low {
+    .card-orange {
         background: linear-gradient(135deg,#f59e0b,#d97706);
-        color: #111;
     }
 
-    .card-receipt {
+    .card-cyan {
         background: linear-gradient(135deg,#06b6d4,#0891b2);
-        color: white;
     }
 
-    .card-delivery {
-        background: linear-gradient(135deg,#6b7280,#4b5563);
-        color: white;
+    .card-gray {
+        background: linear-gradient(135deg,#6b7280,#374151);
     }
 
-    .card-transfer {
-        background: linear-gradient(135deg,#1f2937,#111827);
-        color: white;
+    .card-dark {
+        background: linear-gradient(135deg,#1f2937,#020617);
     }
 </style>
 
+
 <h2 class="mb-4">Inventory Dashboard</h2>
+
+
+<!-- FILTER -->
 
 <form method="get" class="row g-2 mb-4">
 
     <div class="col-auto">
+
         <select name="documentType" class="form-select form-select-sm">
             <option value="">All types</option>
-            <option value="0" selected="@(ViewBag.DocumentType != null && (int)ViewBag.DocumentType == 0)">Receipts</option>
-            <option value="1" selected="@(ViewBag.DocumentType != null && (int)ViewBag.DocumentType == 1)">Delivery</option>
-            <option value="2" selected="@(ViewBag.DocumentType != null && (int)ViewBag.DocumentType == 2)">Internal</option>
+            <option value="0">Receipts</option>
+            <option value="1">Delivery</option>
+            <option value="2">Internal</option>
         </select>
+
     </div>
 
+
     <div class="col-auto">
+
         <select name="status" class="form-select form-select-sm">
+
             <option value="">All statuses</option>
-            <option value="0" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 0)">Draft</option>
-            <option value="1" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 1)">Waiting</option>
-            <option value="2" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 2)">Ready</option>
-            <option value="3" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 3)">Done</option>
-            <option value="4" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 4)">Canceled</option>
+            <option value="0">Draft</option>
+            <option value="1">Waiting</option>
+            <option value="2">Ready</option>
+            <option value="3">Done</option>
+            <option value="4">Canceled</option>
+
         </select>
+
     </div>
 
+
     <div class="col-auto">
+
         <select name="warehouseId" class="form-select form-select-sm">
+
             <option value="">All warehouses</option>
 
             @foreach (var w in ViewBag.Warehouses as IEnumerable<HackathonMvcSqlite.Models.Warehouse> ?? new List<HackathonMvcSqlite.Models.Warehouse>())
             {
-                <option value="@w.Id" selected="@(ViewBag.WarehouseId == w.Id)">
-                    @w.Name
-                </option>
+                <option value="@w.Id">@w.Name</option>
             }
 
         </select>
+
     </div>
 
+
     <div class="col-auto">
-        <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+
+        <button type="submit" class="btn btn-primary btn-sm">
+            <i class="fa fa-filter"></i> Filter
+        </button>
+
     </div>
 
 </form>
 
 
+<!-- DASHBOARD CARDS -->
+
 <div class="row g-3 mb-4">
 
-    <div class="col-lg col-md-6">
-        <div class="card stats-card card-total">
-            <div class="card-body">
-                <h6>Total Products in Stock</h6>
-                <div class="value">@Model.TotalProductsInStock</div>
+    <div class="col-lg-2 col-md-4 col-sm-6">
+
+        <div class="stats-card card-blue">
+
+            <div class="stats-title">Total Products</div>
+
+            <div class="stats-value">
+                @Model.TotalProductsInStock
             </div>
+
+            <i class="fa fa-box stats-icon"></i>
+
         </div>
+
     </div>
 
-    <div class="col-lg col-md-6">
-        <div class="card stats-card card-low">
-            <div class="card-body">
-                <h6>Low / Out of Stock</h6>
-                <div class="value">@Model.LowStockOrOutOfStockCount</div>
+
+    <div class="col-lg-2 col-md-4 col-sm-6">
+
+        <div class="stats-card card-orange">
+
+            <div class="stats-title">Low Stock</div>
+
+            <div class="stats-value">
+                @Model.LowStockOrOutOfStockCount
             </div>
+
+            <i class="fa fa-exclamation-triangle stats-icon"></i>
+
         </div>
+
     </div>
 
-    <div class="col-lg col-md-6">
-        <div class="card stats-card card-receipt">
-            <div class="card-body">
-                <h6>Pending Receipts</h6>
-                <div class="value">@Model.PendingReceiptsCount</div>
+
+    <div class="col-lg-2 col-md-4 col-sm-6">
+
+        <div class="stats-card card-cyan">
+
+            <div class="stats-title">Pending Receipts</div>
+
+            <div class="stats-value">
+                @Model.PendingReceiptsCount
             </div>
+
+            <i class="fa fa-arrow-down stats-icon"></i>
+
         </div>
+
     </div>
 
-    <div class="col-lg col-md-6">
-        <div class="card stats-card card-delivery">
-            <div class="card-body">
-                <h6>Pending Deliveries</h6>
-                <div class="value">@Model.PendingDeliveriesCount</div>
+
+    <div class="col-lg-2 col-md-4 col-sm-6">
+
+        <div class="stats-card card-gray">
+
+            <div class="stats-title">Pending Deliveries</div>
+
+            <div class="stats-value">
+                @Model.PendingDeliveriesCount
             </div>
+
+            <i class="fa fa-truck stats-icon"></i>
+
         </div>
+
     </div>
 
-    <div class="col-lg col-md-6">
-        <div class="card stats-card card-transfer">
-            <div class="card-body">
-                <h6>Transfers Scheduled</h6>
-                <div class="value">@Model.InternalTransfersScheduledCount</div>
+
+    <div class="col-lg-2 col-md-4 col-sm-6">
+
+        <div class="stats-card card-dark">
+
+            <div class="stats-title">Transfers Scheduled</div>
+
+            <div class="stats-value">
+                @Model.InternalTransfersScheduledCount
             </div>
+
+            <i class="fa fa-right-left stats-icon"></i>
+
         </div>
+
     </div>
 
 </div>
 
+
+<!-- TABLE SECTION -->
 
 <div class="row">
 
@@ -163,7 +230,7 @@
 
         <div class="card">
 
-            <div class="card-header">
+            <div class="card-header fw-bold">
                 Low Stock Alerts
             </div>
 
@@ -172,21 +239,27 @@
                 <table class="table table-sm table-hover mb-0">
 
                     <thead>
+
                         <tr>
                             <th>Product</th>
                             <th>SKU</th>
                             <th>Qty</th>
-                            <th>Reorder at</th>
+                            <th>Reorder</th>
                         </tr>
+
                     </thead>
 
                     <tbody>
 
                         @foreach (var p in Model.LowStockProducts)
                         {
+
                             <tr>
+
                                 <td>
-                                    <a href="/Products/Stock/@p.ProductId">@p.Name</a>
+                                    <a href="/Products/Stock/@p.ProductId">
+                                        @p.Name
+                                    </a>
                                 </td>
 
                                 <td>@p.Sku</td>
@@ -194,7 +267,9 @@
                                 <td>@p.TotalQty</td>
 
                                 <td>@p.ReorderLevel</td>
+
                             </tr>
+
                         }
 
                         @if (!Model.LowStockProducts.Any())
@@ -221,7 +296,7 @@
 
         <div class="card">
 
-            <div class="card-header">
+            <div class="card-header fw-bold">
                 Recent Documents
             </div>
 
@@ -230,19 +305,24 @@
                 <table class="table table-sm table-hover mb-0">
 
                     <thead>
+
                         <tr>
+
                             <th>Type</th>
                             <th>Reference</th>
                             <th>Status</th>
                             <th>Warehouse</th>
                             <th>Date</th>
+
                         </tr>
+
                     </thead>
 
                     <tbody>
 
                         @foreach (var d in Model.RecentDocuments)
                         {
+
                             <tr>
 
                                 <td>@d.Type</td>
@@ -260,6 +340,7 @@
                                 <td>@d.CreatedAt.ToLocalTime().ToString("g")</td>
 
                             </tr>
+
                         }
 
                         @if (!Model.RecentDocuments.Any())

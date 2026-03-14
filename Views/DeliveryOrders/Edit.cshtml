@@ -1,14 +1,25 @@
+Edit.cshtml
+
 @model HackathonMvcSqlite.Models.DeliveryOrder
 @{
     ViewData["Title"] = "Edit Delivery Order";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <h2 class="mb-3">Delivery Order @Model.Reference</h2>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 <p>Customer: @Model.Customer · Warehouse: @Model.Warehouse?.Name · Status: <span class="badge bg-secondary">@Model.Status</span></p>
 <table class="table table-sm mb-3">
     <thead><tr><th>Product</th><th>Quantity</th></tr></thead>
     <tbody>
-        @foreach (var l in Model.Lines) { <tr><td>@l.Product?.Name</td><td>@l.Quantity</td></tr> }
+        @foreach (var l in Model.Lines)
+        {
+            <tr><td>@l.Product?.Name</td><td>@l.Quantity</td></tr>
+        }
     </tbody>
 </table>
 @if (Model.Status != HackathonMvcSqlite.Models.DocumentStatus.Done)
