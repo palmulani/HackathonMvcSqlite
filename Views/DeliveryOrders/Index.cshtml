@@ -18,42 +18,52 @@
     </div>
 
     <div class="col-auto">
-        <select name="warehouseId" class="form-select form-select-sm" asp-items="ViewBag.Warehouses">
+        <select name="warehouseId"
+                class="form-select form-select-sm"
+                asp-items="ViewBag.Warehouses">
+
             <option value="">All warehouses</option>
+
         </select>
     </div>
 
     <div class="col-auto">
         <button type="submit" class="btn btn-sm btn-primary">
-            Filter
+            <i class="fa fa-filter"></i> Filter
         </button>
     </div>
 
     <div class="col-auto">
-        <a href="/DeliveryOrders/Create" class="btn btn-sm btn-success">
+        <a href="/DeliveryOrders/Create"
+               class="btn btn-sm btn-success">
+
             <i class="fa fa-plus"></i> New Delivery Order
         </a>
     </div>
 
 </form>
 
+
 <table class="table table-sm table-hover datatable">
 
     <thead>
+
         <tr>
             <th>Reference</th>
             <th>Customer</th>
             <th>Warehouse</th>
             <th>Status</th>
             <th>Created</th>
-            <th width="180">Actions</th>
+            <th width="240">Actions</th>
         </tr>
+
     </thead>
 
     <tbody>
 
         @foreach (var d in Model)
         {
+
             <tr>
 
                 <td>@d.Reference</td>
@@ -72,34 +82,37 @@
 
                 <td>
 
-                    <a class="btn btn-warning btn-sm"
+                    <a class="btn btn-warning btn-sm me-1"
                            href="/DeliveryOrders/Edit/@d.Id">
 
-                        <i class="fa fa-pen"></i>
+                        <i class="fa fa-pen"></i> Edit
 
                     </a>
 
-                    <a class="btn btn-danger btn-sm"
+                    <a class="btn btn-danger btn-sm me-1"
                            href="/DeliveryOrders/Delete/@d.Id"
                            onclick="return confirm('Delete this order?')">
 
-                        <i class="fa fa-trash"></i>
+                        <i class="fa fa-trash"></i> Delete
 
                     </a>
 
                     @if (d.Status != HackathonMvcSqlite.Models.DocumentStatus.Done)
                     {
+
                         <a class="btn btn-success btn-sm"
                                href="/DeliveryOrders/Validate/@d.Id">
 
-                            <i class="fa fa-check"></i>
+                            <i class="fa fa-check"></i> Validate
 
                         </a>
+
                     }
 
                 </td>
 
             </tr>
+
         }
 
     </tbody>

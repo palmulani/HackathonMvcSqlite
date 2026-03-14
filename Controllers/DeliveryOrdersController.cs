@@ -76,11 +76,21 @@ namespace HackathonMvcSqlite.Controllers
 
         public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
-            var category = await _db.ProductCategories.FindAsync(new object[] { id }, ct);
+            var order = await _db.DeliveryOrders
+                .Include(o => o.Lines)
+                .FirstOrDefaultAsync(o => o.Id == id, ct);
 
-            if (category != null)
+            if (order != null)
             {
-                _db.ProductCategories.Remove(category);
+                // delete order lines first
+                if (order.Lines.Any())
+                {
+                    _db.DeliveryOrderLines.RemoveRange(order.Lines);
+                }
+
+                // delete order
+                _db.DeliveryOrders.Remove(order);
+
                 await _db.SaveChangesAsync(ct);
             }
 
