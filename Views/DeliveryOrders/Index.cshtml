@@ -10,7 +10,7 @@
     <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Filter</button></div>
     <div class="col-auto"><a href="/DeliveryOrders/Create" class="btn btn-sm btn-success">New Delivery Order</a></div>
 </form>
-<table class="table table-sm table-hover">
+<table class="table table-sm table-hover datatable">
     <thead><tr><th>Reference</th><th>Customer</th><th>Warehouse</th><th>Status</th><th>Created</th><th></th></tr></thead>
     <tbody>
         @foreach (var d in Model)
