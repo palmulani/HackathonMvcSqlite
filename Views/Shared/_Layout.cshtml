@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hackathon Dashboard</title>
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+<link rel="stylesheet"
+href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<style>
+body{display:flex}
+.sidebar{width:220px;background:#111827;color:white;height:100vh;padding:20px}
+.sidebar a{display:block;color:white;margin:10px 0;text-decoration:none}
+.content{flex:1;padding:20px}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+<h4>Hackathon</h4>
+<a href="/">Dashboard</a>
+<a href="/Employee">Employees</a>
+</div>
+
+<div class="content">
+@RenderBody()
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+</body>
+</html>
