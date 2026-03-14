@@ -1,33 +1,102 @@
 @model IEnumerable<HackathonMvcSqlite.Models.Product>
+
 @{
     ViewData["Title"] = "Products";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <h2 class="mb-3">Products</h2>
+
 <form method="get" class="row g-2 mb-3">
-    <div class="col-auto"><input type="text" name="search" value="@ViewBag.Search" class="form-control form-control-sm" placeholder="Search name or SKU" /></div>
-    <div class="col-auto">@Html.DropDownList("categoryId", ViewBag.Categories as SelectList, "All categories", new { @class = "form-select form-select-sm" })</div>
-    <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Filter</button></div>
-    <div class="col-auto"><a href="/Products/Create" class="btn btn-sm btn-success">New Product</a></div>
+
+    <div class="col-auto">
+        <input type="text"
+               name="search"
+               value="@ViewBag.Search"
+               class="form-control form-control-sm"
+               placeholder="Search name or SKU" />
+    </div>
+
+    <div class="col-auto">
+        @Html.DropDownList("categoryId",
+            ViewBag.Categories as SelectList,
+            "All categories",
+            new { @class = "form-select form-select-sm" })
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-sm btn-primary">
+            <i class="fa fa-search"></i> Filter
+        </button>
+    </div>
+
+    <div class="col-auto">
+        <a href="/Products/Create" class="btn btn-sm btn-success">
+            <i class="fa fa-plus"></i> New Product
+        </a>
+    </div>
+
 </form>
-<td>
 
-    
 
-</td>
 <table class="table table-sm table-hover datatable">
-    <thead><tr><th>Name</th><th>SKU</th><th>Category</th><th>UoM</th><th>Reorder</th><th></th></tr></thead>
+
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>SKU</th>
+            <th>Category</th>
+            <th>UoM</th>
+            <th>Reorder</th>
+            <th width="280">Actions</th>
+        </tr>
+    </thead>
+
     <tbody>
+
         @foreach (var p in Model)
         {
             <tr>
+
                 <td>@p.Name</td>
+
                 <td>@p.Sku</td>
+
                 <td>@(p.Category?.Name ?? "-")</td>
+
                 <td>@p.UnitOfMeasure</td>
+
                 <td>@p.ReorderLevel</td>
-                <td><a href="/Products/Edit/@p.Id">Edit</a> | <a href="/Products/Stock/@p.Id">Stock</a></td>
+
+                <td>
+
+                    <a class="btn btn-warning btn-sm me-1"
+                           href="/Products/Edit/@p.Id">
+
+                        <i class="fa fa-pen"></i> Edit
+
+                    </a>
+
+                    <a class="btn btn-danger btn-sm me-1"
+                           href="/Products/Delete/@p.Id"
+                           onclick="return confirm('Delete this product?')">
+
+                        <i class="fa fa-trash"></i> Delete
+
+                    </a>
+
+                    <a class="btn btn-info btn-sm"
+                           href="/Products/Stock/@p.Id">
+
+                        <i class="fa fa-warehouse"></i> Warehouse Stock
+
+                    </a>
+
+                </td>
+
             </tr>
         }
+
     </tbody>
+
 </table>

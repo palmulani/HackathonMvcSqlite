@@ -1,33 +1,108 @@
 @model IEnumerable<HackathonMvcSqlite.Models.Receipt>
+
 @{
     ViewData["Title"] = "Receipts";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <h2 class="mb-3">Receipts (Incoming)</h2>
+
 <form method="get" class="row g-2 mb-3">
-    <div class="col-auto"><select name="status" class="form-select form-select-sm"><option value="">All</option><option value="0">Draft</option><option value="3">Done</option></select></div>
-    <div class="col-auto"><select name="warehouseId" class="form-select form-select-sm" asp-items="ViewBag.Warehouses"><option value="">All warehouses</option></select></div>
-    <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Filter</button></div>
-    <div class="col-auto"><a href="/Receipts/Create" class="btn btn-sm btn-success">New Receipt</a></div>
+
+    <div class="col-auto">
+        <select name="status" class="form-select form-select-sm">
+            <option value="">All</option>
+            <option value="0">Draft</option>
+            <option value="3">Done</option>
+        </select>
+    </div>
+
+    <div class="col-auto">
+        <select name="warehouseId" class="form-select form-select-sm" asp-items="ViewBag.Warehouses">
+            <option value="">All warehouses</option>
+        </select>
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-sm btn-primary">
+            Filter
+        </button>
+    </div>
+
+    <div class="col-auto">
+        <a href="/Receipts/Create" class="btn btn-sm btn-success">
+            <i class="fa fa-plus"></i> New Receipt
+        </a>
+    </div>
+
 </form>
-<td>
 
-   
 
-</td>
 <table class="table table-sm table-hover datatable">
-    <thead><tr><th>Reference</th><th>Supplier</th><th>Warehouse</th><th>Status</th><th>Created</th><th></th></tr></thead>
+
+    <thead>
+        <tr>
+            <th>Reference</th>
+            <th>Supplier</th>
+            <th>Warehouse</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th width="180">Actions</th>
+        </tr>
+    </thead>
+
     <tbody>
+
         @foreach (var r in Model)
         {
             <tr>
+
                 <td>@r.Reference</td>
+
                 <td>@r.Supplier</td>
+
                 <td>@r.Warehouse?.Name</td>
-                <td><span class="badge bg-secondary">@r.Status</span></td>
+
+                <td>
+                    <span class="badge bg-secondary">
+                        @r.Status
+                    </span>
+                </td>
+
                 <td>@r.CreatedAt.ToLocalTime().ToString("g")</td>
-                <td><a href="/Receipts/Edit/@r.Id">Edit</a> @if (r.Status != HackathonMvcSqlite.Models.DocumentStatus.Done) { <text>|</text> <a href="/Receipts/Validate/@r.Id">Validate</a> }</td>
+
+                <td>
+
+                    <a class="btn btn-warning btn-sm"
+                           href="/Receipts/Edit/@r.Id">
+
+                        <i class="fa fa-pen"></i>
+
+                    </a>
+
+                    <a class="btn btn-danger btn-sm"
+                           href="/Receipts/Delete/@r.Id"
+                           onclick="return confirm('Delete this receipt?')">
+
+                        <i class="fa fa-trash"></i>
+
+                    </a>
+
+                    @if (r.Status != HackathonMvcSqlite.Models.DocumentStatus.Done)
+                    {
+                        <a class="btn btn-success btn-sm"
+                               href="/Receipts/Validate/@r.Id">
+
+                            <i class="fa fa-check"></i>
+
+                        </a>
+                    }
+
+                </td>
+
             </tr>
         }
+
     </tbody>
+
 </table>

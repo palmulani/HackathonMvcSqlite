@@ -1,18 +1,63 @@
 @model IEnumerable<HackathonMvcSqlite.Models.Warehouse>
+
 @{
     ViewData["Title"] = "Warehouses";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <h2 class="mb-3">Warehouses</h2>
-<p><a href="/Warehouses/Create" class="btn btn-success">Add Warehouse</a></p>
-<td>
 
+<p>
+    <a href="/Warehouses/Create" class="btn btn-success">
+        <i class="fa fa-plus"></i> Add Warehouse
+    </a>
+</p>
 
-
-</td>
 <table class="table table-sm table-hover datatable">
-    <thead><tr><th>Name</th><th>Code</th><th>Location</th><th></th></tr></thead>
+
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Location</th>
+            <th width="150">Actions</th>
+        </tr>
+    </thead>
+
     <tbody>
-        @foreach (var w in Model) { <tr><td>@w.Name</td><td>@w.Code</td><td>@w.Location</td><td><a href="/Warehouses/Edit/@w.Id">Edit</a></td></tr> }
+
+        @foreach (var w in Model)
+        {
+            <tr>
+
+                <td>@w.Name</td>
+
+                <td>@w.Code</td>
+
+                <td>@w.Location</td>
+
+                <td>
+
+                    <a class="btn btn-warning btn-sm"
+                           href="/Warehouses/Edit/@w.Id">
+
+                        <i class="fa fa-pen"></i>
+
+                    </a>
+
+                    <a class="btn btn-danger btn-sm"
+                           href="/Warehouses/Delete/@w.Id"
+                           onclick="return confirm('Delete this warehouse?')">
+
+                        <i class="fa fa-trash"></i>
+
+                    </a>
+
+                </td>
+
+            </tr>
+        }
+
     </tbody>
+
 </table>

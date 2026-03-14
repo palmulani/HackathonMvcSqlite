@@ -11,48 +11,78 @@ namespace HackathonMvcSqlite.Controllers
     {
         private readonly AppDbContext _db;
 
-        public WarehousesController(AppDbContext db) => _db = db;
+        public WarehousesController(AppDbContext db)
+        {
+            _db = db;
+        }
 
         public async Task<IActionResult> Index(CancellationToken ct)
         {
-            var list = await _db.Warehouses.OrderBy(w => w.Name).ToListAsync(ct);
+            var list = await _db.Warehouses
+                .OrderBy(w => w.Name)
+                .ToListAsync(ct);
+
             return View(list);
         }
 
-        public IActionResult Create() => View(new Warehouse());
+        public IActionResult Create()
+        {
+            return View(new Warehouse());
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create(Warehouse model, CancellationToken ct)
         {
-            if (ModelState.IsValid) { _db.Warehouses.Add(model); await _db.SaveChangesAsync(ct); return RedirectToAction(nameof(Index)); }
+            if (ModelState.IsValid)
+            {
+                _db.Warehouses.Add(model);
+                await _db.SaveChangesAsync(ct);
+
+                return RedirectToAction(nameof(Index));
+            }
+
             return View(model);
         }
 
-        public async Task<IActionResult> Delete(int id, CancellationToken ct)
-        {
-            var category = await _db.ProductCategories.FindAsync(new object[] { id }, ct);
-
-            if (category != null)
-            {
-                _db.ProductCategories.Remove(category);
-                await _db.SaveChangesAsync(ct);
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
         public async Task<IActionResult> Edit(int id, CancellationToken ct)
         {
             var w = await _db.Warehouses.FindAsync(new object[] { id }, ct);
-            if (w == null) return NotFound();
+
+            if (w == null)
+                return NotFound();
+
             return View(w);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(int id, Warehouse model, CancellationToken ct)
         {
-            if (id != model.Id) return NotFound();
-            if (ModelState.IsValid) { _db.Warehouses.Update(model); await _db.SaveChangesAsync(ct); return RedirectToAction(nameof(Index)); }
+            if (id != model.Id)
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                _db.Warehouses.Update(model);
+                await _db.SaveChangesAsync(ct);
+
+                return RedirectToAction(nameof(Index));
+            }
+
             return View(model);
+        }
+
+        // DELETE WAREHOUSE
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
+        {
+            var warehouse = await _db.Warehouses.FindAsync(new object[] { id }, ct);
+
+            if (warehouse != null)
+            {
+                _db.Warehouses.Remove(warehouse);
+                await _db.SaveChangesAsync(ct);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
