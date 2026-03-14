@@ -1,19 +1,151 @@
-
+@* @model HackathonMvcSqlite.ViewModels.DashboardViewModel
 @{
-Layout="~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<h2 class="mb-4">Inventory Dashboard</h2>
 
-<h2>Dashboard</h2>
+<form method="get" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select name="documentType" class="form-select form-select-sm">
+            <option value="">All types</option>
+            <option value="0" selected="@(ViewBag.DocumentType != null && (int)ViewBag.DocumentType == 0)">Receipts</option>
+            <option value="1" selected="@(ViewBag.DocumentType != null && (int)ViewBag.DocumentType == 1)">Delivery</option>
+            <option value="2" selected="@(ViewBag.DocumentType != null && (int)ViewBag.DocumentType == 2)">Internal</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="status" class="form-select form-select-sm">
+            <option value="">All statuses</option>
+            <option value="0" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 0)">Draft</option>
+            <option value="1" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 1)">Waiting</option>
+            <option value="2" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 2)">Ready</option>
+            <option value="3" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 3)">Done</option>
+            <option value="4" selected="@(ViewBag.Status != null && (int)ViewBag.Status == 4)">Canceled</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="warehouseId" class="form-select form-select-sm">
+            <option value="">All warehouses</option>
+            @foreach (var w in ViewBag.Warehouses as IEnumerable<HackathonMvcSqlite.Models.Warehouse> ?? new List<HackathonMvcSqlite.Models.Warehouse>())
+            {
+                <option value="@w.Id" selected="@(ViewBag.WarehouseId == w.Id)">@w.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Filter</button></div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h6 class="card-title">Total Products in Stock</h6>
+                <p class="h3 mb-0">@Model.TotalProductsInStock</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h6 class="card-title">Low / Out of Stock</h6>
+                <p class="h3 mb-0">@Model.LowStockOrOutOfStockCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h6 class="card-title">Pending Receipts</h6>
+                <p class="h3 mb-0">@Model.PendingReceiptsCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <h6 class="card-title">Pending Deliveries</h6>
+                <p class="h3 mb-0">@Model.PendingDeliveriesCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="card bg-dark text-white">
+            <div class="card-body">
+                <h6 class="card-title">Transfers Scheduled</h6>
+                <p class="h3 mb-0">@Model.InternalTransfersScheduledCount</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">Low Stock Alerts</div>
+            <div class="card-body p-0">
+                <table class="table table-sm table-hover mb-0">
+                    <thead><tr><th>Product</th><th>SKU</th><th>Qty</th><th>Reorder at</th></tr></thead>
+                    <tbody>
+                        @foreach (var p in Model.LowStockProducts)
+                        {
+                            <tr>
+                                <td><a href="/Products/Stock/@p.ProductId">@p.Name</a></td>
+                                <td>@p.Sku</td>
+                                <td>@p.TotalQty</td>
+                                <td>@p.ReorderLevel</td>
+                            </tr>
+                        }
+                        @if (!Model.LowStockProducts.Any())
+                        {
+                            <tr><td colspan="4" class="text-muted">No low stock items</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">Recent Documents</div>
+            <div class="card-body p-0">
+                <table class="table table-sm table-hover mb-0">
+                    <thead><tr><th>Type</th><th>Reference</th><th>Status</th><th>Warehouse</th><th>Date</th></tr></thead>
+                    <tbody>
+                        @foreach (var d in Model.RecentDocuments)
+                        {
+                            <tr>
+                                <td>@d.Type</td>
+                                <td>@d.Reference</td>
+                                <td><span class="badge bg-secondary">@d.Status</span></td>
+                                <td>@d.Warehouse</td>
+                                <td>@d.CreatedAt.ToLocalTime().ToString("g")</td>
+                            </tr>
+                        }
+                        @if (!Model.RecentDocuments.Any())
+                        {<Project Sdk="Microsoft.NET.Sdk.Web">
 
-<div class="col-md-3">
-<div class="card bg-primary text-white">
-<div class="card-body">
-<h4>Employees</h4>
-<p>Manage employee records</p>
-</div>
-</div>
-</div>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.25" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.25">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>
+                            <tr><td colspan="5" class="text-muted">No documents yet</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+ *@
