@@ -60,7 +60,7 @@ namespace HackathonMvcSqlite.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        [Authorize, HttpPost]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -93,6 +93,7 @@ namespace HackathonMvcSqlite.Controllers
             await _emailService.SendOtp(email, otp);
 
             TempData["email"] = email;
+            TempData["OtpAttempts"] = 0;
 
             return RedirectToAction("VerifyOtp");
         }
@@ -102,19 +103,43 @@ namespace HackathonMvcSqlite.Controllers
             return View();
         }
 
+       
         [HttpPost]
         public async Task<IActionResult> VerifyOtp(string otp)
         {
             var email = TempData["email"]?.ToString();
+            TempData.Keep("email");
+
+            if (email == null)
+                return RedirectToAction("Login");
 
             var user = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
 
-            if (user == null || user.ResetOtp != otp || user.ResetOtpExpiry < DateTime.UtcNow)
+            if (user == null)
+                return RedirectToAction("Login");
+
+            int attempts = TempData["OtpAttempts"] == null ? 0 : (int)TempData["OtpAttempts"];
+
+            if (user.ResetOtp != otp || user.ResetOtpExpiry < DateTime.UtcNow)
             {
-                ModelState.AddModelError("", "Invalid or expired OTP");
+                attempts++;
+                TempData["OtpAttempts"] = attempts;
+                TempData.Keep("OtpAttempts");
+
+                if (attempts >= 3)
+                {
+                    TempData.Remove("email");
+                    TempData.Remove("OtpAttempts");
+                    ModelState.AddModelError("", "Too many invalid attempts. Please login again.");
+                    return RedirectToAction("Login");
+                }
+
+                ModelState.AddModelError("", $"Invalid OTP. Attempts left: {3 - attempts}");
                 return View();
             }
 
+            // OTP correct
+            TempData.Remove("OtpAttempts");
             TempData["resetEmail"] = email;
 
             return RedirectToAction("ResetPassword");
