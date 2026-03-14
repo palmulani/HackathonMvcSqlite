@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using HackathonMvcSqlite.Data;
+using HackathonMvcSqlite.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
@@ -9,7 +10,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(o => { o.LoginPath = "/Account/Login"; o.LogoutPath = "/Account/Logout"; });
 builder.Services.AddScoped<HackathonMvcSqlite.Services.InventoryService>();
-
+builder.Services.AddScoped<EmailService>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

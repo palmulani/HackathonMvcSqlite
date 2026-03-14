@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HackathonMvcSqlite.Data;
 using HackathonMvcSqlite.Models;
+using HackathonMvcSqlite.Services;
 
 namespace HackathonMvcSqlite.Controllers
 {
@@ -13,8 +14,13 @@ namespace HackathonMvcSqlite.Controllers
     public class AccountController : Controller
     {
         private readonly AppDbContext _db;
+        private readonly EmailService _emailService;
 
-        public AccountController(AppDbContext db) => _db = db;
+        public AccountController(AppDbContext db, EmailService emailService)
+        {
+            _db = db;
+            _emailService = emailService;
+        }
 
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
@@ -60,7 +66,83 @@ namespace HackathonMvcSqlite.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction(nameof(Login));
         }
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Email not found");
+                return View();
+            }
+
+            var otp = new Random().Next(100000, 999999).ToString();
+
+            user.ResetOtp = otp;
+            user.ResetOtpExpiry = DateTime.UtcNow.AddMinutes(10);
+
+            await _db.SaveChangesAsync();
+
+            await _emailService.SendOtp(email, otp);
+
+            TempData["email"] = email;
+
+            return RedirectToAction("VerifyOtp");
+        }
+        [HttpGet]
+        public IActionResult VerifyOtp()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyOtp(string otp)
+        {
+            var email = TempData["email"]?.ToString();
+
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+            if (user == null || user.ResetOtp != otp || user.ResetOtpExpiry < DateTime.UtcNow)
+            {
+                ModelState.AddModelError("", "Invalid or expired OTP");
+                return View();
+            }
+
+            TempData["resetEmail"] = email;
+
+            return RedirectToAction("ResetPassword");
+        }
+        [HttpGet]
+        public IActionResult ResetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string password)
+        {
+            var email = TempData["resetEmail"]?.ToString();
+
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+            if (user == null)
+                return RedirectToAction("Login");
+
+            user.PasswordHash = HashPassword(password);
+            user.ResetOtp = null;
+            user.ResetOtpExpiry = null;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("Login");
+        }
         private static string HashPassword(string password) => Convert.ToBase64String(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(password)));
         private static bool VerifyPassword(string password, string hash) => HashPassword(password) == hash;
     }
