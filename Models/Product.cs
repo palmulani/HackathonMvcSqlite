@@ -6,19 +6,29 @@ namespace HackathonMvcSqlite.Models
     {
         public int Id { get; set; }
 
-        [Required, MaxLength(200)]
+        [Required(ErrorMessage = "Product Name is required")]
+        [MaxLength(200, ErrorMessage = "Maximum 200 characters allowed")]
         public string Name { get; set; } = string.Empty;
 
-        [MaxLength(50)]
+        [Required(ErrorMessage = "SKU / Code is required")]
+        [MaxLength(50, ErrorMessage = "Maximum 50 characters allowed")]
         public string? Sku { get; set; }
 
+        [Required(ErrorMessage = "Please select category")]
         public int? CategoryId { get; set; }
+
         public ProductCategory? Category { get; set; }
 
+        [Required(ErrorMessage = "Unit Of Measure is required")]
         [MaxLength(20)]
         public string UnitOfMeasure { get; set; } = "Unit";
 
+        [Required(ErrorMessage = "Reorder Level is required")]
+        [Range(0, 999999, ErrorMessage = "Invalid reorder level")]
         public decimal ReorderLevel { get; set; }
+
+        [Required(ErrorMessage = "Reorder Quantity is required")]
+        [Range(0, 999999, ErrorMessage = "Invalid reorder quantity")]
         public decimal ReorderQuantity { get; set; }
 
         public ICollection<StockBalance> StockBalances { get; set; } = new List<StockBalance>();
