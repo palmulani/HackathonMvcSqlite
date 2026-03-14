@@ -39,5 +39,18 @@ namespace HackathonMvcSqlite.Controllers
             _inv.ApplyAdjustment(model);
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
+        {
+            var category = await _db.ProductCategories.FindAsync(new object[] { id }, ct);
+
+            if (category != null)
+            {
+                _db.ProductCategories.Remove(category);
+                await _db.SaveChangesAsync(ct);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

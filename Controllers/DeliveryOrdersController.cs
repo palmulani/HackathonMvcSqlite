@@ -49,6 +49,18 @@ namespace HackathonMvcSqlite.Controllers
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
+        {
+            var category = await _db.ProductCategories.FindAsync(new object[] { id }, ct);
+
+            if (category != null)
+            {
+                _db.ProductCategories.Remove(category);
+                await _db.SaveChangesAsync(ct);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
         public async Task<IActionResult> Edit(int id, CancellationToken ct)
         {
             var d = await _db.DeliveryOrders.Include(x => x.Lines).ThenInclude(l => l.Product).Include(x => x.Warehouse).FirstOrDefaultAsync(x => x.Id == id, ct);

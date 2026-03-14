@@ -1,20 +1,23 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>@ViewData["Title"] - CoreInventory</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     <style>
 
             body {
                 display: flex;
-                font-family: Segoe UI;
+                min-height: 100vh;
+                font-family: 'Segoe UI';
                 background: #f1f5f9;
             }
 
@@ -23,19 +26,20 @@
             .sidebar {
                 width: 240px;
                 background: #0f172a;
+                color: #e2e8f0;
                 height: 100vh;
-                color: white;
+                padding: 1rem;
                 position: fixed;
-                padding: 20px;
             }
 
                 .sidebar a {
                     display: block;
                     color: #94a3b8;
+                    margin: 0.4rem 0;
                     text-decoration: none;
-                    padding: 8px;
-                    margin-bottom: 5px;
+                    padding: 0.5rem;
                     border-radius: 6px;
+                    transition: 0.2s;
                 }
 
                     .sidebar a:hover {
@@ -43,55 +47,58 @@
                         color: white;
                     }
 
-            /* CONTENT */
+                .sidebar .nav-section {
+                    font-size: 0.7rem;
+                    text-transform: uppercase;
+                    color: #64748b;
+                    margin-top: 1rem;
+                    margin-bottom: 0.25rem;
+                }
 
             .content {
+                flex: 1;
                 margin-left: 240px;
-                padding: 25px;
-                width: 100%;
+                padding: 1.5rem;
+                background: #f8fafc;
             }
 
-            /* HEADER */
+            /* CARD */
+
+            .card {
+                border: none;
+                box-shadow: 0 4px 10px rgba(0,0,0,.08);
+            }
+
+            /* TABLE */
+
+            table.dataTable thead {
+                background: #2563eb;
+                color: white;
+            }
+
+            /* SEARCH */
+
+            .dataTables_filter input {
+                border-radius: 8px;
+                padding: 6px 10px;
+                border: 1px solid #ddd;
+            }
 
             .page-header {
                 background: #0f172a;
                 color: white;
-                padding: 12px 20px;
-                border-radius: 8px;
-                margin-bottom: 20px;
+                padding: 12px 18px;
                 font-size: 20px;
                 font-weight: 600;
+                border-radius: 6px;
+                margin-bottom: 20px;
             }
 
-            /* CARDS */
-
-            .stats-card {
-                border: none;
-                border-radius: 12px;
-                padding: 20px;
-                color: white;
-                min-height: 110px;
-                box-shadow: 0 4px 10px rgba(0,0,0,.1);
-            }
-
-            .card-blue {
-                background: linear-gradient(135deg,#2563eb,#1e40af);
-            }
-
-            .card-yellow {
-                background: linear-gradient(135deg,#f59e0b,#d97706);
-            }
-
-            .card-cyan {
-                background: linear-gradient(135deg,#06b6d4,#0891b2);
-            }
-
-            .card-gray {
-                background: linear-gradient(135deg,#6b7280,#4b5563);
-            }
-
-            .card-dark {
-                background: linear-gradient(135deg,#1f2937,#111827);
+            .page-body {
+                background: #ffffff;
+                padding: 15px;
+                border-radius: 6px;
+                box-shadow: 0 4px 10px rgba(0,0,0,.08);
             }
     </style>
 
@@ -101,34 +108,36 @@
 
     <div class="sidebar">
 
-        <h5>
-            <i class="fa fa-boxes-stacked"></i>
+        <h5 class="text-white mb-3">
+            <i class="fa-solid fa-boxes-stacked"></i>
             CoreInventory
         </h5>
 
-        <a href="/">Dashboard</a>
+        <a href="/"><i class="fa fa-chart-line"></i> Dashboard</a>
 
-        <h6 class="mt-3">Products</h6>
+        <div class="nav-section">Products</div>
 
-        <a href="/Products">Products</a>
+        <a href="/Products"><i class="fa fa-box"></i> Products</a>
+        <a href="/Categories"><i class="fa fa-tags"></i> Categories</a>
 
-        <a href="/Categories">Categories</a>
+        <div class="nav-section">Operations</div>
 
-        <h6 class="mt-3">Operations</h6>
+        <a href="/Receipts"><i class="fa fa-arrow-down"></i> Receipts</a>
+        <a href="/DeliveryOrders"><i class="fa fa-truck"></i> Delivery Orders</a>
+        <a href="/InternalTransfers"><i class="fa fa-right-left"></i> Internal Transfers</a>
+        <a href="/Adjustments"><i class="fa fa-sliders"></i> Adjustments</a>
+        <a href="/MoveHistory"><i class="fa fa-clock-rotate-left"></i> Move History</a>
 
-        <a href="/Receipts">Receipts</a>
+        <div class="nav-section">Settings</div>
 
-        <a href="/DeliveryOrders">Delivery Orders</a>
+        <a href="/Warehouses"><i class="fa fa-warehouse"></i> Warehouses</a>
 
-        <a href="/InternalTransfers">Transfers</a>
+        <div class="nav-section">Profile</div>
 
-        <a href="/Adjustments">Adjustments</a>
-
-        <a href="/MoveHistory">Move History</a>
-
-        <h6 class="mt-3">Settings</h6>
-
-        <a href="/Warehouses">Warehouses</a>
+        <a href="/Account/Logout" class="text-warning">
+            <i class="fa fa-right-from-bracket"></i>
+            Logout
+        </a>
 
     </div>
 
@@ -139,10 +148,47 @@
             @ViewData["Title"]
         </div>
 
-        @RenderBody()
+        <div class="page-body">
+            @RenderBody()
+        </div>
 
     </div>
 
-</body>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+
+    <script>
+
+        $(document).ready(function () {
+
+        // Only tables with class 'datatable' will use DataTables
+
+        $(".datatable").DataTable({
+
+        pageLength: 10,
+
+        responsive: true,
+
+        language: {
+        search: "🔎 Search:",
+        lengthMenu: "Show _MENU_ entries",
+        info: "Showing _START_ to _END_ of _TOTAL_ entries"
+        }
+
+        });
+
+        });
+
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
 </html>

@@ -14,7 +14,8 @@ namespace HackathonMvcSqlite.Models
 
         [Required, MaxLength(256)]
         public string PasswordHash { get; set; } = string.Empty;
-
+        public string? ResetOtp { get; set; }
+        public DateTime? ResetOtpExpiry { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

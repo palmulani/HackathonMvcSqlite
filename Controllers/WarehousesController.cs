@@ -28,6 +28,18 @@ namespace HackathonMvcSqlite.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
+        {
+            var category = await _db.ProductCategories.FindAsync(new object[] { id }, ct);
+
+            if (category != null)
+            {
+                _db.ProductCategories.Remove(category);
+                await _db.SaveChangesAsync(ct);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
         public async Task<IActionResult> Edit(int id, CancellationToken ct)
         {
             var w = await _db.Warehouses.FindAsync(new object[] { id }, ct);
